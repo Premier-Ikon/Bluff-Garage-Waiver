@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import type { WaiverSubmission } from "@/types/waiver";
+import type { WaiverSubmission, WaiverSubmitResponse } from "@/types/waiver";
 
 export async function POST(request: Request) {
   let body: WaiverSubmission;
@@ -33,16 +33,24 @@ export async function POST(request: Request) {
       body: JSON.stringify(body),
     });
 
+    const data = (await upstream.json().catch(() => null)) as
+      | WaiverSubmitResponse
+      | { error?: string }
+      | null;
+
     if (!upstream.ok) {
-      const message = await upstream.text();
+      const status =
+        upstream.status >= 400 && upstream.status < 600
+          ? upstream.status
+          : 502;
+
       return NextResponse.json(
-        { error: message || "Cloud function rejected the submission." },
-        { status: 502 },
+        data ?? { error: "Cloud function rejected the submission." },
+        { status },
       );
     }
 
-    const data = await upstream.json().catch(() => ({ ok: true }));
-    return NextResponse.json(data);
+    return NextResponse.json(data ?? { ok: true });
   }
 
   console.info("[waiver] submission received", {
@@ -55,5 +63,6 @@ export async function POST(request: Request) {
   return NextResponse.json({
     ok: true,
     message: "Waiver recorded (dev mode).",
-  });
+    notificationEmailSent: false,
+  } satisfies WaiverSubmitSuccess);
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import type { WaiverSubmission } from "@/types/waiver";
+import { FormEvent, useEffect, useState } from "react";
+import type { WaiverSubmission, WaiverSubmitResponse } from "@/types/waiver";
 import { SignatureModal } from "./SignatureModal";
 
 const inputClass =
@@ -11,6 +11,30 @@ const labelClass = "block text-sm font-medium text-neutral-800";
 
 const allowTestFail =
   process.env.NEXT_PUBLIC_ALLOW_TEST_FAIL === "true";
+
+const RESET_DELAY_MS = 5000;
+
+function SuccessMessage() {
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      window.location.reload();
+    }, RESET_DELAY_MS);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="py-8 text-center">
+      <p className="text-2xl font-semibold text-neutral-900">Success!</p>
+      <p className="mt-3 text-base text-neutral-700">
+        Your waiver has been submitted.
+      </p>
+      <p className="mt-2 text-sm text-neutral-500">
+        A new form will load in a few seconds…
+      </p>
+    </div>
+  );
+}
 
 export function WaiverForm() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">(
@@ -45,20 +69,25 @@ export function WaiverForm() {
       body: JSON.stringify(payload),
     });
 
-    const data = (await response.json().catch(() => null)) as {
-      error?: string;
-      details?: string;
-      fallbackEmailSent?: boolean;
-    } | null;
+    const data = (await response.json().catch(() => null)) as
+      | WaiverSubmitResponse
+      | null;
 
     if (!response.ok) {
-      if (data?.fallbackEmailSent) {
+      const err = data && "error" in data ? data : null;
+      if (err?.notificationEmailSent) {
         throw new Error(
-          "Sheet save failed, but a backup email was sent to the team.",
+          "Sheet save failed, but your submission was emailed to the team.",
         );
       }
       throw new Error(
-        data?.details ?? data?.error ?? "Unable to submit. Please try again.",
+        err?.details ?? err?.error ?? "Unable to submit. Please try again.",
+      );
+    }
+
+    if (data && "ok" in data && data.ok && !data.notificationEmailSent) {
+      console.warn(
+        "[waiver] saved but notification email was not sent (check SMTP on Cloud Function)",
       );
     }
   };
@@ -105,7 +134,7 @@ export function WaiverForm() {
       await submitPayload(formElement, { testFail: true });
       setStatus("error");
       setErrorMessage(
-        "Test completed unexpectedly — sheet save succeeded. Is ALLOW_TEST_FAIL enabled on the Cloud Function?",
+        "Test completed unexpectedly — sheet save succeeded. Is ALLOW_TEST_FAIL enabled on the Cloud Function? You should still receive a success notification email.",
       );
     } catch (error) {
       setStatus("error");
@@ -116,16 +145,7 @@ export function WaiverForm() {
   };
 
   if (status === "success") {
-    return (
-      <div className="text-center">
-        <p className="text-lg font-medium text-neutral-900">
-          Thank you — your waiver has been submitted.
-        </p>
-        <p className="mt-2 text-sm text-neutral-600">
-          Your acknowledgement has been recorded.
-        </p>
-      </div>
-    );
+    return <SuccessMessage />;
   }
 
   return (
@@ -251,7 +271,7 @@ export function WaiverForm() {
           >
             {status === "submitting"
               ? "Testing…"
-              : "Test email fallback (simulated fail)"}
+              : "Test failure notification (simulated sheet error)"}
           </button>
         ) : null}
       </form>
