@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import type { WaiverSubmission, WaiverSubmitResponse } from "@/types/waiver";
+import type {
+  WaiverSubmission,
+  WaiverSubmitResponse,
+  WaiverSubmitSuccess,
+} from "@/types/waiver";
 
 export async function POST(request: Request) {
   let body: WaiverSubmission;
