@@ -1,7 +1,6 @@
 export type WaiverSubmission = {
   firstName: string;
   lastName: string;
-  email: string;
   dateOfBirth: string;
   phone: string;
   signatureDataUrl: string;

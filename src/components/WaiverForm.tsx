@@ -52,7 +52,6 @@ export function WaiverForm() {
     const payload: WaiverSubmission = {
       firstName: String(form.get("firstName") ?? "").trim(),
       lastName: String(form.get("lastName") ?? "").trim(),
-      email: String(form.get("email") ?? "").trim(),
       dateOfBirth: String(form.get("dateOfBirth") ?? ""),
       phone: String(form.get("phone") ?? "").trim(),
       signatureDataUrl: signature!,
@@ -176,16 +175,6 @@ export function WaiverForm() {
               autoComplete="family-name"
             />
           </label>
-          <label className="sm:col-span-2">
-            <span className={labelClass}>Email</span>
-            <input
-              className={inputClass}
-              type="email"
-              name="email"
-              required
-              autoComplete="email"
-            />
-          </label>
           <label className="min-w-0">
             <span className={labelClass}>Date of birth</span>
             <input
@@ -231,7 +220,7 @@ export function WaiverForm() {
             </button>
             <p className="mt-2 text-xs leading-relaxed text-neutral-500">
               By signing above, I acknowledge that I have read and agree to The
-              Bluff Garage visitor liability waiver.
+              The Bluff Garage liability waiver and NDA.
             </p>
           </div>
         </div>

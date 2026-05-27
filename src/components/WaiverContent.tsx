@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   WAIVER_INTRO,
+  WAIVER_PREVIEW,
   WAIVER_SECTIONS,
   WAIVER_TITLE,
 } from "@/lib/waiver-text";
@@ -12,11 +13,13 @@ export function WaiverContent() {
 
   return (
     <article>
-      <h2 className="text-lg font-semibold text-neutral-900">Waiver</h2>
+      <h2 className="text-lg font-semibold text-neutral-900">{WAIVER_TITLE}</h2>
 
       <div className="mt-4 text-sm leading-relaxed text-neutral-700">
-        <p className="font-medium text-neutral-900">{WAIVER_TITLE}</p>
-        <p className={`mt-4 ${expanded ? "" : "line-clamp-[5]"}`}>{WAIVER_INTRO}</p>
+        <div className={`space-y-2 ${expanded ? "" : "line-clamp-[8]"}`}>
+          <p>{WAIVER_INTRO}</p>
+          <p>{WAIVER_PREVIEW}</p>
+        </div>
 
         <div
           className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${

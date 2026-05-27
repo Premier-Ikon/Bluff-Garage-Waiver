@@ -1,6 +1,6 @@
 export const SHOP_NAME = "The Bluff Garage";
 
-export const WAIVER_TITLE = "Garage Visitor Liability Waiver";
+export const WAIVER_TITLE = "Garage Visitor Liability Waiver & NDA";
 
 export const WAIVER_SECTIONS = [
   {
@@ -35,6 +35,14 @@ export const WAIVER_SECTIONS = [
     ],
   },
   {
+    title: "Non-Disclosure Agreement (NDA)",
+    paragraphs: [
+      `You agree not to disclose, share, publish, or use for personal benefit any confidential information you observe or learn at ${SHOP_NAME}, including customer information, business operations, projects, pricing, processes, tools, or proprietary methods.`,
+      "This confidentiality obligation applies during your visit and after you leave the premises.",
+      "Confidential information does not include information that is already public or that you lawfully knew before your visit.",
+    ],
+  },
+  {
     title: "Media Release (Optional)",
     paragraphs: [
       `You acknowledge that photos or videos may be recorded on the premises for social media, promotional, or business purposes. You consent to the reasonable use of your likeness unless you notify ${SHOP_NAME} in writing that you do not wish to be photographed or recorded.`,
@@ -49,9 +57,11 @@ export const WAIVER_SECTIONS = [
   {
     title: "Agreement",
     paragraphs: [
-      "By entering the premises, signing below, or submitting this form electronically, you confirm that you have read, understood, and voluntarily agreed to this waiver and release of liability.",
+      "By entering the premises, signing below, or submitting this form electronically, you confirm that you have read, understood, and voluntarily agreed to this liability waiver and NDA.",
     ],
   },
 ] as const;
 
-export const WAIVER_INTRO = `By entering or visiting the property, garage, workshop, or premises operated by ${SHOP_NAME}, all visitors acknowledge and agree to the following:`;
+export const WAIVER_INTRO = `By entering or visiting the property, garage, workshop, or premises operated by ${SHOP_NAME}, all visitors acknowledge and agree to the following terms:`;
+
+export const WAIVER_PREVIEW = `This form includes a Non-Disclosure Agreement (NDA). You agree not to share confidential business, customer, or operational information you may see or hear while on the premises.`;

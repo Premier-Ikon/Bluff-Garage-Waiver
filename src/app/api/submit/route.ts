@@ -13,7 +13,6 @@ export async function POST(request: Request) {
   if (
     !body.firstName ||
     !body.lastName ||
-    !body.email ||
     !body.dateOfBirth ||
     !body.phone ||
     !body.signatureDataUrl
@@ -55,7 +54,7 @@ export async function POST(request: Request) {
 
   console.info("[waiver] submission received", {
     name: `${body.firstName} ${body.lastName}`,
-    email: body.email,
+    phone: body.phone,
     signedAt: body.signedAt,
     hasSignature: Boolean(body.signatureDataUrl),
   });
