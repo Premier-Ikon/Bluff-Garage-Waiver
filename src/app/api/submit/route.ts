@@ -5,6 +5,19 @@ import type {
   WaiverSubmitSuccess,
 } from "@/types/waiver";
 
+function isAtLeast18(dateOfBirth: string): boolean {
+  const dob = new Date(`${dateOfBirth}T00:00:00`);
+  if (Number.isNaN(dob.getTime())) return false;
+
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    age -= 1;
+  }
+  return age >= 18;
+}
+
 export async function POST(request: Request) {
   let body: WaiverSubmission;
 
@@ -23,6 +36,13 @@ export async function POST(request: Request) {
   ) {
     return NextResponse.json(
       { error: "Missing required fields." },
+      { status: 400 },
+    );
+  }
+
+  if (!isAtLeast18(body.dateOfBirth)) {
+    return NextResponse.json(
+      { error: "You must be at least 18 years old to sign this agreement." },
       { status: 400 },
     );
   }
@@ -59,6 +79,7 @@ export async function POST(request: Request) {
   console.info("[waiver] submission received", {
     name: `${body.firstName} ${body.lastName}`,
     phone: body.phone,
+    entityName: body.entityName,
     signedAt: body.signedAt,
     hasSignature: Boolean(body.signatureDataUrl),
   });

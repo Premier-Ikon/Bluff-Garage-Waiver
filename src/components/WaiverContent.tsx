@@ -32,7 +32,7 @@ export function WaiverContent() {
                 <section key={section.title}>
                   <h3 className="font-medium text-neutral-900">{section.title}</h3>
                   {section.paragraphs.map((paragraph) => (
-                    <p key={paragraph} className="mt-2">
+                    <p key={paragraph.slice(0, 80)} className="mt-2">
                       {paragraph}
                     </p>
                   ))}
@@ -48,7 +48,7 @@ export function WaiverContent() {
         onClick={() => setExpanded((value) => !value)}
         className="mt-4 text-sm font-medium text-neutral-900 underline-offset-2 hover:underline"
       >
-        {expanded ? "Read less" : "Read more"}
+        {expanded ? "Read less" : "Read full agreement"}
       </button>
     </article>
   );

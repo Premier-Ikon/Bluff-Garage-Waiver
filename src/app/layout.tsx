@@ -8,8 +8,9 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Bluff | Waiver",
-  description: "Digital waiver for Bluff.",
+  title: "Bluff | Confidentiality & Waiver Agreement",
+  description:
+    "Independent contractor confidentiality, NDA, and liability waiver for BR Social Media Marketing and The Bluff Garage.",
   icons: {
     icon: [
       { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },

@@ -3,6 +3,8 @@ export type WaiverSubmission = {
   lastName: string;
   dateOfBirth: string;
   phone: string;
+  /** Optional contractor entity / business name */
+  entityName?: string;
   signatureDataUrl: string;
   accepted: boolean;
   signedAt: string;

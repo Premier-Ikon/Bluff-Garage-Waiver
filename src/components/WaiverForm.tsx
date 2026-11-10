@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import type { WaiverSubmission, WaiverSubmitResponse } from "@/types/waiver";
+import { WAIVER_ACKNOWLEDGMENT } from "@/lib/waiver-text";
 import { SignatureModal } from "./SignatureModal";
 
 const inputClass =
@@ -13,6 +14,19 @@ const allowTestFail =
   process.env.NEXT_PUBLIC_ALLOW_TEST_FAIL === "true";
 
 const RESET_DELAY_MS = 5000;
+
+function isAtLeast18(dateOfBirth: string): boolean {
+  const dob = new Date(`${dateOfBirth}T00:00:00`);
+  if (Number.isNaN(dob.getTime())) return false;
+
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const monthDiff = today.getMonth() - dob.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    age -= 1;
+  }
+  return age >= 18;
+}
 
 function SuccessMessage() {
   useEffect(() => {
@@ -27,7 +41,7 @@ function SuccessMessage() {
     <div className="py-8 text-center">
       <p className="text-2xl font-semibold text-neutral-900">Success!</p>
       <p className="mt-3 text-base text-neutral-700">
-        Your waiver has been submitted.
+        Your agreement has been submitted.
       </p>
       <p className="mt-2 text-sm text-neutral-500">
         A new form will load in a few seconds…
@@ -49,11 +63,19 @@ export function WaiverForm() {
     options?: { testFail?: boolean },
   ) => {
     const form = new FormData(formElement);
+    const dateOfBirth = String(form.get("dateOfBirth") ?? "");
+    const entityName = String(form.get("entityName") ?? "").trim();
+
+    if (!isAtLeast18(dateOfBirth)) {
+      throw new Error("You must be at least 18 years old to sign this agreement.");
+    }
+
     const payload: WaiverSubmission = {
       firstName: String(form.get("firstName") ?? "").trim(),
       lastName: String(form.get("lastName") ?? "").trim(),
-      dateOfBirth: String(form.get("dateOfBirth") ?? ""),
+      dateOfBirth,
       phone: String(form.get("phone") ?? "").trim(),
+      ...(entityName ? { entityName } : {}),
       signatureDataUrl: signature!,
       accepted: true,
       signedAt: new Date().toISOString(),
@@ -155,6 +177,10 @@ export function WaiverForm() {
         id="waiver-form"
       >
         <h2 className="text-lg font-semibold text-neutral-900">Acknowledgement</h2>
+        <p className="text-sm leading-relaxed text-neutral-600">
+          Adults 18+ only. One signature covers confidentiality, recording consent,
+          shop premises access, and the limited release — no separate initials required.
+        </p>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <label>
@@ -194,6 +220,18 @@ export function WaiverForm() {
               autoComplete="tel"
             />
           </label>
+          <label className="sm:col-span-2">
+            <span className={labelClass}>
+              Company / entity name{" "}
+              <span className="font-normal text-neutral-500">(optional)</span>
+            </span>
+            <input
+              className={inputClass}
+              name="entityName"
+              autoComplete="organization"
+              placeholder="If signing for a business"
+            />
+          </label>
 
           <div className="sm:col-span-2">
             <span className={labelClass}>Signature</span>
@@ -219,8 +257,7 @@ export function WaiverForm() {
               )}
             </button>
             <p className="mt-2 text-xs leading-relaxed text-neutral-500">
-              By signing above, I acknowledge that I have read and agree to The
-              The Bluff Garage liability waiver and NDA.
+              {WAIVER_ACKNOWLEDGMENT}
             </p>
           </div>
         </div>
