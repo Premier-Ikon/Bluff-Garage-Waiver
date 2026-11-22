@@ -52,7 +52,7 @@ export function SignatureModal({ open, onClose, onAccept }: SignatureModalProps)
           id="signature-modal-title"
           className="text-lg font-semibold text-neutral-900"
         >
-          Sign to accept waiver
+          Sign to accept NDA & waiver
         </h2>
         <p className="mt-1 text-sm text-neutral-600">
           Use your finger or stylus to sign below.
